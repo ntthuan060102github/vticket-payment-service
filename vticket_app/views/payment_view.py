@@ -28,4 +28,4 @@ class PaymentView(viewsets.ViewSet):
 
     @action(methods=["GET"], detail=False, url_path="IPN", authentication_classes=())
     def IPN(self, request: Request):
-        return Response(data={"RspCode": "00", "Message": "Confirm Success"})
+        return Response(data={"RspCode": "00", "Message": "Confirm Success"}, content_type="application/json")
