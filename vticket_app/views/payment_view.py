@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.request import Request
 from rest_framework.decorators import action
-from rest_framework.response import Response
+from django.http import JsonResponse
 from drf_yasg.utils import swagger_auto_schema
 
 from vticket_app.decorators.validate_body import validate_body
@@ -28,4 +28,4 @@ class PaymentView(viewsets.ViewSet):
 
     @action(methods=["GET"], detail=False, url_path="IPN", authentication_classes=())
     def IPN(self, request: Request):
-        return Response(data={"RspCode": "00", "Message": "Confirm Success"}, content_type="application/json")
+        return JsonResponse({"RspCode": "00", "Message": "Confirm Success"})
