@@ -8,14 +8,16 @@ from vticket_app.decorators.validate_body import validate_body
 from vticket_app.dtos.payment_request_dto import PaymentRequestDTO
 from vticket_app.helpers.swagger_provider import SwaggerProvider
 from vticket_app.serializers.payment_request_serializer import PaymentRequestSerializer
+from vticket_app.serializers.payment_serializer import PaymentSerializer
 from vticket_app.services.payment_service import PaymentService
 from vticket_app.utils.response import RestResponse
 
 class PaymentView(viewsets.ViewSet):
+    authentication_classes = ()
     payment_service = PaymentService()
 
     @action(methods=["POST"], detail=False, url_path="pay-url")
-    @swagger_auto_schema(request_body=PaymentRequestSerializer, manual_parameters=[SwaggerProvider.header_authentication()])
+    @swagger_auto_schema(request_body=PaymentRequestSerializer)
     @validate_body(PaymentRequestSerializer)
     def get_payment_url(self, request: Request, validated_body: dict):
         try:
@@ -26,6 +28,19 @@ class PaymentView(viewsets.ViewSet):
             print(e)
             return RestResponse().internal_server_error().response
 
+    @swagger_auto_schema(request_body=PaymentSerializer)
     @action(methods=["GET"], detail=False, url_path="IPN", authentication_classes=())
     def IPN(self, request: Request):
-        return JsonResponse({"RspCode": "00", "Message": "Confirm Success"})
+        try:
+            data = request.query_params
+            validate = PaymentSerializer(data=data)
+
+            if not validate.is_valid():
+                print(validate.errors)
+                return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
+            
+            print(validate.validated_data)
+            return JsonResponse({"RspCode": "00", "Message": "Confirm Success"})
+        except Exception as e:
+            print(e)
+            return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
