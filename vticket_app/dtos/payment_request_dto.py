@@ -4,7 +4,7 @@ from datetime import datetime
 @dataclass
 class PaymentRequestDTO():
     amount: int = None
-    order_id: int = None
+    order_id: str = None
     created_date: datetime = None
     customer_ip: str = ""
     locale: str = ""
