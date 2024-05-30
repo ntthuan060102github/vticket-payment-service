@@ -1,7 +1,11 @@
+import json
+import requests
 from uuid import uuid4
+from datetime import datetime
 from django.conf import settings
 from dataclasses import asdict
 
+from vticket_app.configs.related_service import RelatedService
 from vticket_app.models.payment import Payment
 from vticket_app.models.payment_request import PaymentRequest
 from vticket_app.dtos.payment_request_dto import PaymentRequestDTO
@@ -56,7 +60,29 @@ class PaymentService():
         try:
             instance = Payment(**data)
             instance.save()
-            return True
+
+            if instance.transaction_status == 0:
+                return self.update_order(instance.payment_request.order_id, instance.pay_date, instance.id)
+            else:
+                return True
+        except Exception as e:
+            print(e)
+            return False
+        
+    def update_order(self, order_id: str, paid_at: datetime, payment_id: int) -> bool:
+        try:
+            resp = requests.post(
+                url=f"{RelatedService.event}/ticket/update",
+                data=json.dumps(
+                    {
+                        "booking_id": order_id,
+                        "paid_at": paid_at.strftime("%Y-%m-%d %H:%M:%S"),
+                        "payment_id": payment_id
+                    }
+                )
+            )
+            resp_data = resp.json()
+            return resp_data["status"] == 1
         except Exception as e:
             print(e)
             return False
