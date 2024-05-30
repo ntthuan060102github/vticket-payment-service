@@ -82,6 +82,7 @@ class PaymentService():
                 )
             )
             resp_data = resp.json()
+            print(resp_data)
             return resp_data["status"] == 1
         except Exception as e:
             print(e)
