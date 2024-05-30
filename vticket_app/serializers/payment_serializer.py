@@ -8,7 +8,17 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = "__all__"
 
-    payment_request = serializers.PrimaryKeyRelatedField(queryset=PaymentRequest.objects.all(), pk_field="id")
+    def __init__(self, *args, **kwargs):
+        existing = set(self.fields.keys())
+        fields = kwargs.pop("fields", []) or existing
+        exclude = kwargs.pop("exclude", [])
+        
+        super().__init__(*args, **kwargs)
+        
+        for field in exclude + list(existing - fields):
+            self.fields.pop(field, None)
+
+    payment_request = serializers.PrimaryKeyRelatedField(queryset=PaymentRequest.objects.all(), many=False, allow_null=False)
 
     __mapping_key_obj = {
         "vnp_Amount": "amount",
@@ -32,8 +42,6 @@ class PaymentSerializer(serializers.ModelSerializer):
         "response_code": lambda x: int(x),
         "transaction_status": lambda x: int(x)
     }
-
-
 
     def to_internal_value(self, data):
         __mapped_data = {}
