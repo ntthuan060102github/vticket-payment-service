@@ -2,6 +2,7 @@ from uuid import uuid4
 from django.conf import settings
 from dataclasses import asdict
 
+from vticket_app.models.payment import Payment
 from vticket_app.models.payment_request import PaymentRequest
 from vticket_app.dtos.payment_request_dto import PaymentRequestDTO
 from vticket_app.helpers.vnpay import vnpay
@@ -53,6 +54,8 @@ class PaymentService():
 
     def update_payement(self, data: dict) -> bool:
         try:
+            instance = Payment(**data)
+            instance.save()
             return True
         except Exception as e:
             print(e)
