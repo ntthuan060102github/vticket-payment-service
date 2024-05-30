@@ -79,7 +79,10 @@ class PaymentService():
                         "paid_at": paid_at.strftime("%Y-%m-%d %H:%M:%S"),
                         "payment_id": payment_id
                     }
-                )
+                ),
+                headers={
+                    "Content-type": "application/json"
+                }
             )
             resp_data = resp.json()
             print(resp_data)
