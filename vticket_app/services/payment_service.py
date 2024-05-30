@@ -50,3 +50,10 @@ class PaymentService():
         except Exception as e:
             print(e)
             return False
+
+    def update_payement(self, data: dict) -> bool:
+        try:
+            return True
+        except Exception as e:
+            print(e)
+            return False

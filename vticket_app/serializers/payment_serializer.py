@@ -19,6 +19,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             self.fields.pop(field, None)
 
     payment_request = serializers.PrimaryKeyRelatedField(queryset=PaymentRequest.objects.all(), many=False, allow_null=False)
+    pay_date = serializers.DateTimeField(input_formats=["%Y%m%d%H%M%S"])
 
     __mapping_key_obj = {
         "vnp_Amount": "amount",
@@ -37,20 +38,20 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     __mapping_data_type_obj = {
         "amount": lambda x: int(x),
-        "pay_date": lambda x: int(x),
         "tran_no": lambda x: int(x),
         "response_code": lambda x: int(x),
         "transaction_status": lambda x: int(x)
     }
 
-    def to_internal_value(self, data):
+    @staticmethod
+    def mapping(data):
         __mapped_data = {}
 
-        for bk, ak in self.__mapping_key_obj.items():
+        for bk, ak in PaymentSerializer.__mapping_key_obj.items():
             if bk in data:
                 __mapped_data[ak] = data[bk]
 
-        for k, exp in self.__mapping_data_type_obj.items():
+        for k, exp in PaymentSerializer.__mapping_data_type_obj.items():
             __mapped_data[k] = exp(__mapped_data[k])
 
         return __mapped_data

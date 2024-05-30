@@ -37,15 +37,16 @@ class PaymentView(viewsets.ViewSet):
     def IPN(self, request: Request):
         try:
             _data = request.query_params
-            validate = PaymentSerializer(data=_data.dict())
+            validate = PaymentSerializer(data=PaymentSerializer.mapping(_data.dict()))
 
             if not validate.is_valid():
                 print(validate.errors)
                 return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
             
-            print(validate.validated_data)
-            validate.save()
-            return JsonResponse({"RspCode": "00", "Message": "Confirm Success"})
+            if self.payment_service.update_payement(validate.validated_data):
+                return JsonResponse({"RspCode": "00", "Message": "Confirm Success"})
+            else:
+                return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
         except Exception as e:
             print(e)
             return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
