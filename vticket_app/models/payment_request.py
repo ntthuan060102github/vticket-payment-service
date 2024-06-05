@@ -8,6 +8,7 @@ class PaymentRequest(models.Model):
         db_table = "payment_request"
     
     id = models.UUIDField(primary_key=True)
+    order_id = models.CharField(max_length=255)
     amount = models.IntegerField(validators=[MinValueValidator(5_000), MaxValueValidator(1_000_000_000)])
     created_date = models.DateTimeField(null=False)
     customer_ip = models.GenericIPAddressField(null=False)

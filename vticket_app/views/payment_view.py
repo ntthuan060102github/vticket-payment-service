@@ -28,19 +28,25 @@ class PaymentView(viewsets.ViewSet):
             print(e)
             return RestResponse().internal_server_error().response
 
-    @swagger_auto_schema(request_body=PaymentSerializer)
+    @swagger_auto_schema(
+        manual_parameters=[
+            SwaggerProvider.query_param(name) for name, _ in PaymentSerializer(exclude=["id"]).fields.items()
+        ]
+    )
     @action(methods=["GET"], detail=False, url_path="IPN", authentication_classes=())
     def IPN(self, request: Request):
         try:
-            data = request.query_params
-            validate = PaymentSerializer(data=data)
+            _data = request.query_params
+            validate = PaymentSerializer(data=PaymentSerializer.mapping(_data.dict()))
 
             if not validate.is_valid():
                 print(validate.errors)
                 return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
             
-            print(validate.validated_data)
-            return JsonResponse({"RspCode": "00", "Message": "Confirm Success"})
+            if self.payment_service.update_payement(validate.validated_data):
+                return JsonResponse({"RspCode": "00", "Message": "Confirm Success"})
+            else:
+                return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
         except Exception as e:
             print(e)
             return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
