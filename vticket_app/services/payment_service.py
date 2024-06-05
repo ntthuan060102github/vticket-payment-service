@@ -33,7 +33,7 @@ class PaymentService():
             "vnp_Locale": data.locale,
             "vnp_OrderInfo": data.order_info,
             "vnp_OrderType": "other",
-            "vnp_ReturnUrl": "https://vticket.netlify.app/",
+            "vnp_ReturnUrl": "https://vticket.netlify.app/payment-result",
             "vnp_ExpireDate": data.expire_date.strftime("%Y%m%d%H%M%S"),
             "vnp_TxnRef": _req_id
         }
