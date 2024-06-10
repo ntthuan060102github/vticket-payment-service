@@ -90,3 +90,9 @@ class PaymentService():
         except Exception as e:
             print(e)
             return False
+        
+    def get_payment_by_id(self, payment_id: int) -> Payment | None:
+        try:
+            return Payment.objects.get(id=payment_id)
+        except Exception as e:
+            return None

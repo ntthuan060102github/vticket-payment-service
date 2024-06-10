@@ -50,3 +50,14 @@ class PaymentView(viewsets.ViewSet):
         except Exception as e:
             print(e)
             return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
+        
+    def retrieve(self, request:Request, pk: int):
+        try:
+            payment = self.payment_service.get_payment_by_id(int(pk))
+
+            if payment is None:
+                return RestResponse().defined_error().set_message("Thông tin thanh toán không tồn tại!").response
+            return RestResponse().success().set_data(PaymentSerializer(payment).data).response
+        except Exception as e:
+            print(e) 
+            return RestResponse().internal_server_error().response
