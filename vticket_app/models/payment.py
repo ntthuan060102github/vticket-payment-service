@@ -20,3 +20,4 @@ class Payment(models.Model):
     payment_request = models.OneToOneField(PaymentRequest, on_delete=models.CASCADE, related_name="payment")
     secure_hash_type = models.CharField(max_length=10, default="")
     secure_hash = models.CharField(max_length=256)
+    refund_at = models.DateTimeField(null=True, default=None)

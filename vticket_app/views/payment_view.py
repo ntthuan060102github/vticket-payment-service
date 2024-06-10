@@ -9,6 +9,7 @@ from vticket_app.dtos.payment_request_dto import PaymentRequestDTO
 from vticket_app.helpers.swagger_provider import SwaggerProvider
 from vticket_app.serializers.payment_request_serializer import PaymentRequestSerializer
 from vticket_app.serializers.payment_serializer import PaymentSerializer
+from vticket_app.serializers.refund_serializer import RefundSerializer
 from vticket_app.services.payment_service import PaymentService
 from vticket_app.utils.response import RestResponse
 
@@ -60,4 +61,20 @@ class PaymentView(viewsets.ViewSet):
             return RestResponse().success().set_data(PaymentSerializer(payment).data).response
         except Exception as e:
             print(e) 
+            return RestResponse().internal_server_error().response
+        
+    @action(methods=["POST"], detail=False, url_path="refund")
+    @swagger_auto_schema(request_body=RefundSerializer)
+    @validate_body(RefundSerializer)
+    def refund(self, request: Request, validated_body: dict):
+        try:
+            ok = self.payment_service.refund(
+                validated_body["user_id"],
+                validated_body["payment"]
+            )
+            if ok:
+                return RestResponse().success().response
+            return RestResponse().defined_error().response
+        except Exception as e:
+            print(e)
             return RestResponse().internal_server_error().response
