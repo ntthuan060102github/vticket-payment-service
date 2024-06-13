@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'vticket_app.middlewares.request_log_layer.RequestLogLayer'
 ]
 
 ROOT_URLCONF = 'vticket.urls'
@@ -175,3 +176,6 @@ PAYMENT_REFUND_URL = config("PAYMENT_REFUND_URL", None)
 PAYMENT_VERSION = config("PAYMENT_VERSION", None)
 PAYMENT_PAY_COMMAMD = config("PAYMENT_PAY_COMMAMD", None)
 PAYMENT_REFUND_COMMAMD = config("PAYMENT_REFUND_COMMAMD", None)
+
+# AMQP
+AMQP_URL = config("AMQP_URL", None)
