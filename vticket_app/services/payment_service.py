@@ -9,6 +9,8 @@ from datetime import datetime
 from django.conf import settings
 from dataclasses import asdict
 
+from django.db.models import Sum
+
 from vticket_app.configs.related_service import RelatedService
 from vticket_app.models.payment import Payment
 from vticket_app.models.payment_request import PaymentRequest
@@ -97,9 +99,10 @@ class PaymentService():
             print(e)
             return False
         
-    def get_payment_by_id(self, payment_id: int) -> Payment | None:
+    def get_total_amount_by_ids(self, payment_ids: list) -> int:
         try:
-            return Payment.objects.get(id=payment_id)
+            data = Payment.objects.filter(id__in=payment_ids).aggregate(Sum("amount"))
+            return data['amount__sum']
         except Exception as e:
             print(e)
             return False

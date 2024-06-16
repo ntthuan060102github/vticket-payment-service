@@ -7,6 +7,7 @@ from drf_yasg.utils import swagger_auto_schema
 from vticket_app.decorators.validate_body import validate_body
 from vticket_app.dtos.payment_request_dto import PaymentRequestDTO
 from vticket_app.helpers.swagger_provider import SwaggerProvider
+from vticket_app.serializers.get_payments_serializer import GetPaymentsSerializer
 from vticket_app.serializers.payment_request_serializer import PaymentRequestSerializer
 from vticket_app.serializers.payment_serializer import PaymentSerializer
 from vticket_app.serializers.refund_serializer import RefundSerializer
@@ -51,18 +52,7 @@ class PaymentView(viewsets.ViewSet):
         except Exception as e:
             print(e)
             return JsonResponse({"RspCode": "01", "Message": "Update Failed"})
-        
-    def retrieve(self, request:Request, pk: int):
-        try:
-            payment = self.payment_service.get_payment_by_id(int(pk))
-
-            if payment is None:
-                return RestResponse().defined_error().set_message("Thông tin thanh toán không tồn tại!").response
-            return RestResponse().success().set_data(PaymentSerializer(payment).data).response
-        except Exception as e:
-            print(e) 
-            return RestResponse().internal_server_error().response
-        
+            
     @action(methods=["POST"], detail=False, url_path="refund")
     @swagger_auto_schema(request_body=RefundSerializer)
     @validate_body(RefundSerializer)
@@ -75,6 +65,18 @@ class PaymentView(viewsets.ViewSet):
             if ok:
                 return RestResponse().success().response
             return RestResponse().defined_error().response
+        except Exception as e:
+            print(e)
+            return RestResponse().internal_server_error().response
+        
+    @action(methods=["POST"], detail=False, url_path="list", authentication_classes=(), permission_classes=())
+    @swagger_auto_schema(request_body=GetPaymentsSerializer)
+    @validate_body(GetPaymentsSerializer)
+    def get_total_amount_by_ids(self, request: Request, validated_body):
+        try:
+            total_amount = self.payment_service.get_total_amount_by_ids(payment_ids=validated_body["payment_ids"])
+            return RestResponse().success().set_data({'total_amount': total_amount}).response
+                
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
