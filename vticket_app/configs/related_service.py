@@ -1,2 +1,2 @@
 class RelatedService:
-    event = "https://vticket-event-service-uoew.onrender.com/apis/vticket-event-service/v1"
+    event = "https://vticket-event-service-xfgd.onrender.com/apis/vticket-event-service/v1"
